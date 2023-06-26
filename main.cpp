@@ -16,6 +16,7 @@ class heading {
         string escStr = ".....";
         string txt = "";
         string out;
+        int len = 5;
         string printout() {
             out.push_back(escChar);
             out.append(escStr);
@@ -66,11 +67,11 @@ string encode(string str) {
 
     bool done = false;
     while (!done) {
-        encoded.genEsc(5);
+        encoded.genEsc(encoded.len);
         string tmp;
         done = true;
         if (encoded.escStr.at(0) == encoded.escStr.at(1)) {
-            encoded.genEsc(5);
+            encoded.genEsc(encoded.len);
         }
         for (i = 0; i < str.size(); i++) {
             tmp.push_back(str.at(i));
@@ -133,13 +134,29 @@ string decode(string str) {
     str = decoded.txt;
     string out = "";
     string tmp;
+    string tmp2;
     for (long unsigned int i = 1; i < str.size(); i++) {
+        tmp2.push_back(str.at(i));
+        if (tmp2 != decoded.escStr.substr(0, tmp.size())) {
+            tmp2 = "";
+        } else if (tmp2.size() == decoded.escStr.size()) {
+            out.push_back(decoded.escChar);
+            continue;
+        };
         if (str.at(i) == decoded.escChar) {
+            int x = 1;
             tmp = str.substr(i + 1, str.substr(i+1).find(decoded.escChar) + i - 1);
-        for (int j = 0; j < stoi(tmp.substr(1)); j++) {
-            out.push_back(tmp.at(0));
-        }
-        i = str.substr(i+1).find(decoded.escChar) + i + 1;
+            char charp = tmp.at(0);
+            if (tmp.size() > decoded.len) {
+                if (tmp.substr(0,5) == decoded.escStr) {
+                    x = 5;
+                    charp = decoded.escChar;
+                }
+            }
+            for (int j = 0; j < stoi(tmp.substr(x)); j++) {
+                out.push_back(charp);
+            }
+            i = str.substr(i+1).find(decoded.escChar) + i + 1;
         } else {
             out.push_back(str.at(i));
         }
@@ -151,7 +168,7 @@ string decode(string str) {
 
 int main() {
     string str = "";
-    for (int i = 0; i < 93; i++) {
+    for (int i = 0; i < 94; i++) {
         for (int j = 0; j < rand() % 9 + 2; j++) {
             str.push_back(i + 33);
         }
