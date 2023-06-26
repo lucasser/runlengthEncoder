@@ -22,6 +22,11 @@ class heading {
             out.append(txt);
             return out;
         }
+        void uncompile(string str) {
+            escChar = str.at(0);
+            escStr = str.substr(1, 5);
+            txt = str.substr(5);
+        }
     private:
         string rngStr(int len) {
             string out;
@@ -37,7 +42,7 @@ class heading {
 };
 
 string encode(string str) {
-    vector<int> chars(95, 0);
+    vector<int> chars(94, 0);
     heading encoded;
     long unsigned int i;
 
@@ -48,7 +53,7 @@ string encode(string str) {
     }
 
     int index = 0;
-    for (i = 0; i < 95; i++) {
+    for (i = 0; i < 94; i++) {
         if (i >= 15 && i <= 24) {
             continue;
         }
@@ -122,34 +127,41 @@ string encode(string str) {
     return encoded.printout();
 }
 
-/*
 string decode(string str) {
+    heading decoded;
+    decoded.uncompile(str);
+    str = decoded.txt;
     string out = "";
     string tmp;
-    for (int i = 1; i < str.size(); i++) {
-        if (to_string(str.at(i)) == "\\") {
-            for (int j = 0; j < to_string(str.at(i+2)); j++) {
-                out.push_back(str.at(i+1));
-            }
+    for (long unsigned int i = 1; i < str.size(); i++) {
+        if (str.at(i) == decoded.escChar) {
+            tmp = str.substr(i + 1, str.substr(i+1).find(decoded.escChar) + i - 1);
+        for (int j = 0; j < stoi(tmp.substr(1)); j++) {
+            out.push_back(tmp.at(0));
+        }
+        i = str.substr(i+1).find(decoded.escChar) + i + 1;
         } else {
             out.push_back(str.at(i));
         }
     }
+
     return out;
-}*/
+}
+
 
 int main() {
-    string str = "&&&&%%";
-    for (int i = 0; i < 95; i++) {
+    string str = "";
+    for (int i = 0; i < 93; i++) {
         for (int j = 0; j < rand() % 9 + 2; j++) {
             str.push_back(i + 33);
         }
     }
-    cout << str << endl;
+    cout << str << endl << endl;
     string out;
     out = encode(str);
-    cout << out << endl;
-    //out = decode(out);
-    //cout << out << endl;
+    cout << out << endl << endl;
+    out = decode(out);
+    cout << out << endl << endl;
     return 0;
 }
+
