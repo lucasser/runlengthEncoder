@@ -14,6 +14,14 @@ class heading {
         }
         char escChar;
         string escStr = ".....";
+        string txt = "";
+        string out;
+        string printout() {
+            out.push_back(escChar);
+            out.append(escStr);
+            out.append(txt);
+            return out;
+        }
     private:
         string rngStr(int len) {
             string out;
@@ -41,8 +49,11 @@ string encode(string str) {
 
     int index = 0;
     for (i = 0; i < 95; i++) {
+        if (i >= 15 && i <= 24) {
+            continue;
+        }
         if (chars.at(i) < chars.at(index)) {
-            index = i; 
+            index = i;
         }
     }
     index += 33;
@@ -66,17 +77,13 @@ string encode(string str) {
             };
         }
     }
-    cout << encoded.escStr << endl;
-    cout << encoded.escChar << endl;
 
     string out = "";
     string tmp;
     tmp.push_back(str.at(0));
     for (i = 1; i < str.size()+1; i++) {
         //remove escChar
-        if (str.at(i) == encoded.escChar){
-            out.append(encoded.escStr);
-        } else if (i == str.size() || str.at(i) != tmp.at(0)) {
+        if (i == str.size()) {
             if (tmp.size() > 1) {
                 out.push_back(encoded.escChar);
                 out.push_back(tmp.at(0));
@@ -85,26 +92,34 @@ string encode(string str) {
             } else {
                 out.push_back(tmp.at(0));
             }
-            return out;
-        } else {
-            tmp.push_back(str.at(i));
+            break;
         }
         if (str.at(i) == tmp.at(0)) {
             tmp.push_back(str.at(i));
         } else {
             if (tmp.size() > 1) {
                 out.push_back(encoded.escChar);
-                out.push_back(tmp.at(0));
+                if (tmp.at(0) == encoded.escChar) {
+                    out.append(encoded.escStr);
+                } else {
+                    out.push_back(tmp.at(0));
+                }
                 out.append(to_string(tmp.size()));
                 out.push_back(encoded.escChar);
             } else {
-                out.push_back(tmp.at(0));
+                if (tmp.at(0) == encoded.escChar) {
+                    out.append(encoded.escStr);
+                } else {
+                    out.push_back(tmp.at(0));
+                }
             }
             tmp = "";
             tmp.push_back(str.at(i));
         }
     }
-    return out;
+    encoded.txt = out;
+
+    return encoded.printout();
 }
 
 /*
@@ -124,7 +139,13 @@ string decode(string str) {
 }*/
 
 int main() {
-    string str = "hello llell\"!o|7]Q";
+    string str = "&&&&%%";
+    for (int i = 0; i < 95; i++) {
+        for (int j = 0; j < rand() % 9 + 2; j++) {
+            str.push_back(i + 33);
+        }
+    }
+    cout << str << endl;
     string out;
     out = encode(str);
     cout << out << endl;
